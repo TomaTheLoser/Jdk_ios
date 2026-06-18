@@ -2,6 +2,11 @@
 set -e
 . setdevkitpath.sh
 
+# Download and install latest iOS SDK
+echo "Downloading latest iOS SDK..."
+xcode-select --install || true
+softwareupdate -i -a || true
+
 export FREETYPE_DIR=$PWD/freetype-$BUILD_FREETYPE_VERSION/build_android-$TARGET_SHORT
 export CUPS_DIR=$PWD/cups-2.2.4
 export CFLAGS+=" -DLE_STANDALONE" # -I$FREETYPE_DIR -I$CUPS_DI
@@ -72,7 +77,7 @@ else
     --with-freetype=bundled \
     "
   AUTOCONF_x11arg="--with-x=/opt/X11/include/X11 --prefix=/usr/lib"
-  sameflags="-arch arm64 -DHEADLESS=1 -I$PWD/ios-missing-include -Wno-implicit-function-declaration -Wno-error=implicit-function-declaration -DTARGET_OS_OSX"
+  sameflags="-arch arm64 -DHEADLESS=1 -I$PWD/ios-missing-include -Wno-implicit-function-declaration -Wno-error=implicit-function-declaration -Wno-error=macro-redefined -DTARGET_OS_OSX"
   export CFLAGS+=" $sameflags"
   export LDFLAGS+="-arch arm64"
   export BUILD_SYSROOT_CFLAGS="-isysroot ${themacsysroot}"
