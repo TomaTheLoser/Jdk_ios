@@ -60,16 +60,22 @@ jobs:
       fail-fast: false
 
     name: "Build Java ${{ matrix.version }} for iOS aarch64"
-    runs-on: MacStadium
+    runs-on: macos-latest
     continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up JDK ${{ matrix.version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.version }}
+          distribution: temurin
+
       - name: Build with CI build script
         run: |
-          export PATH=/opt/procursus/bin:/opt/homebrew/bin:$PATH
-          export JAVA_HOME=$(/usr/libexec/java_home -v ${{ matrix.version }})
+          export PATH=/opt/homebrew/bin:$PATH
+          export JAVA_HOME=$JAVA_HOME_${{ matrix.version }}_ARM64
           export BUILD_IOS=1
           export TARGET_VERSION=${{ matrix.version }}
           bash "1_ci_build_arch_aarch64.sh"
