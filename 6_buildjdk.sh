@@ -7,6 +7,16 @@ echo "Downloading latest iOS SDK..."
 xcode-select --install || true
 softwareupdate -i -a || true
 
+# Fix fdopen macro conflict in zutil.h
+echo "Patching zutil.h to fix fdopen macro conflict..."
+ZUTIL_FILE="$PWD/src/java.base/share/native/libzip/zlib/zutil.h"
+if [ -f "$ZUTIL_FILE" ]; then
+  sed -i '' 's/#if defined(__APPLE__) || defined(HAVE_APPLE_FRAMEWORKS)/#if defined(__APPLE__) \&\& !defined(TARGET_OS_OSX) || defined(HAVE_APPLE_FRAMEWORKS)/g' "$ZUTIL_FILE"
+  echo "zutil.h patched successfully"
+else
+  echo "Warning: zutil.h not found at $ZUTIL_FILE"
+fi
+
 export FREETYPE_DIR=$PWD/freetype-$BUILD_FREETYPE_VERSION/build_android-$TARGET_SHORT
 export CUPS_DIR=$PWD/cups-2.2.4
 export CFLAGS+=" -DLE_STANDALONE" # -I$FREETYPE_DIR -I$CUPS_DI
